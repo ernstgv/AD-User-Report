@@ -86,4 +86,4 @@ $preReplacement = $tableoutput | Sort-Object "Username" | ConvertTo-Html -Fragme
 
 $htmlreport = $preReplacement -replace "&lt;","<" -replace "&gt;",">"
 
-ConvertTo-Html -Body $htmlreport -Title "PCM Staff AD Account Report" -Head $Header | Out-File pcmadinfo.html
+ConvertTo-Html -Body $htmlreport -Title "Staff AD Account Report" -Head $Header | Out-File pcmadinfo.html
