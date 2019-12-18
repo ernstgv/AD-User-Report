@@ -1,9 +1,32 @@
 Import-module ActiveDirectory
 
-$ListOfUsers = Get-ADUser -Filter * -SearchBase "OU=AnotherSubContractorOU,OU=Contractors,OU=AnotherSubOU Users,OU=Users,OU=MyBusiness,DC=MyDomain,DC=local" | select-object -ExpandProperty SamAccountName
+# Modify These Variables accordingly.
+
+$CompanyName = "CompanyNameHere"
+
+$PCMOrganizationalUnit = "OU=AnotherSubContractorOU,OU=Contractors,OU=AnotherSubOU Users,OU=Users,OU=MyBusiness,DC=MyDomain,DC=local"
+
+$ReportDate = get-date -Format g
+
+$SenderName = "sender@example.com"
+$Recipient = 'receiver@somedomain.com'
+
+$EmailSubject = "User Report - $Reportdate"
+
+$BodyMessage = "Attached is Users Audit Report for $CompanyName"
+
+# Generate your own account password hash by running the command in powershell >>> read-host -assecurestring | convertfrom-securestring | out-string
+# Then type in your actual password and hit ENTER.
+# Copy the output series of strings and paste it in $hashpassword below.
+$hashpassword = "000000003660000c00c01dc7bed1c100000dd3c3819739ded5f0abf62661512143b180000000098ef259ac754b828926d875ec921e1c624d1db0f5b2f79140000009e8179d66d258a7a1f4c31d139d92bc53d3ccda4"
+
+$GeneratedFile = "C:\temp\adinfo.html"
+
+
+### Table Build Up
+$ListOfUsers = Get-ADUser -Filter * -SearchBase $PCMOrganizationalUnit | select-object -ExpandProperty SamAccountName
 
 $TableOutput = @()
-
 
 foreach ($SampleUser in $ListOfUsers) {
 
@@ -19,16 +42,23 @@ foreach ($SampleUser in $ListOfUsers) {
         $AccountActive = "<div class=red>NO</div>"
     }
 
+
     if ($SampleADInfo.PasswordExpired -eq $false) {
+
         $IsPasswordExpired = "<div class=green>NO</div>"
+
     } else {$IsPasswordExpired = "<div class=red>YES</div>"}
 
     if ($SampleADInfo.PasswordNeverExpires -eq $false) {
+
         $PasswordNeverExpires = "<div class=green>NO</div>"
+
     } else {$PasswordNeverExpires = "<div class=red>YES</div>"}
 
     if ($SampleADInfo.LockedOut -eq $false){
+
         $LockedOut = "<div class=green>NO</div>"
+
     } else {$LockedOut = "<div class=red>YES</div>"}
 
     $outputdata | Add-Member NoteProperty -name "Username" -value $SampleADInfo.SamAccountName
@@ -45,6 +75,8 @@ foreach ($SampleUser in $ListOfUsers) {
     $tableoutput += $outputdata
 
 }
+
+# For HTML CSS Formatting
 
 $Header = @"
 <style type='text/css'>
@@ -82,8 +114,30 @@ div {
 </style>
 "@
 
-$preReplacement = $tableoutput | Sort-Object "Username" | ConvertTo-Html -Fragment
+# HTML Generation part
+
+$preReplacement = $tableoutput | Sort-Object "Display Name" | ConvertTo-Html -Fragment
 
 $htmlreport = $preReplacement -replace "&lt;","<" -replace "&gt;",">"
 
-ConvertTo-Html -Body $htmlreport -Title "Staff AD Account Report" -Head $Header | Out-File adinfo.html
+ConvertTo-Html -Body $htmlreport -Head $Header -PostContent "Report Generated: $ReportDate" | Out-File $GeneratedFile
+
+# Emailing Part
+
+$securePwd = $hashpassword | convertto-securestring
+$credObject = New-Object System.Management.Automation.PSCredential -ArgumentList $username, $securePwd
+
+
+$mailParams = @{
+    SmtpServer                 = 'smtp.office365.com'
+    Port                       = '587'
+    From                       = $SenderName
+    To                         = $Recipient
+    Subject                    = $EmailSubject
+    Body                       = $BodyMessage
+    Attachments                = $GeneratedFile
+    BodyAsHTML                 = $true
+    DeliveryNotificationOption = 'OnFailure', 'OnSuccess'
+}
+
+Send-MailMessage @mailParams -UseSSL -Credential $credObject
