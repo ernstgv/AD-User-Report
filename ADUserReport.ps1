@@ -18,7 +18,7 @@ $BodyMessage = "Attached is Users Audit Report for $CompanyName"
 # Generate your own account password hash by running the command in powershell >>> read-host -assecurestring | convertfrom-securestring | out-string
 # Then type in your actual password and hit ENTER.
 # Copy the output series of strings and paste it in $hashpassword below.
-$hashpassword = "000000003660000c00c01dc7bed1c100000dd3c3819739ded5f0abf62661512143b180000000098ef259ac754b828926d875ec921e1c624d1db0f5b2f79140000009e8179d66d258a7a1f4c31d139d92bc53d3ccda4"
+$hashpassword = "0000000036654b828926d875ec921e1c624d1db0f5b2f79140000009e8179d66d258a7a1f4c31d139d92bc53d3ccda4"
 
 $GeneratedFile = "C:\temp\adinfo.html"
 
