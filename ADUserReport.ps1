@@ -4,7 +4,7 @@ Import-module ActiveDirectory
 
 $CompanyName = "CompanyNameHere"
 
-$PCMOrganizationalUnit = "OU=AnotherSubContractorOU,OU=Contractors,OU=AnotherSubOU Users,OU=Users,OU=MyBusiness,DC=MyDomain,DC=local"
+$OrganizationalUnit = "OU=AnotherSubContractorOU,OU=Contractors,OU=AnotherSubOU Users,OU=Users,OU=MyBusiness,DC=MyDomain,DC=local"
 
 $ReportDate = get-date -Format g
 
