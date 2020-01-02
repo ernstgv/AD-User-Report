@@ -24,7 +24,7 @@ $GeneratedFile = "C:\temp\adinfo.html"
 
 
 ### Table Build Up
-$ListOfUsers = Get-ADUser -Filter * -SearchBase $PCMOrganizationalUnit | select-object -ExpandProperty SamAccountName
+$ListOfUsers = Get-ADUser -Filter * -SearchBase $OrganizationalUnit | select-object -ExpandProperty SamAccountName
 
 $TableOutput = @()
 
