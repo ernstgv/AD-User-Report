@@ -8,7 +8,12 @@ $OrganizationalUnit = "OU=AnotherSubContractorOU,OU=Contractors,OU=AnotherSubOU 
 
 $ReportDate = get-date -Format g
 
+$smtpserver = "mycompanymx.example.com"
+
+$port = "25"
+
 $SenderName = "sender@example.com"
+
 $Recipient = 'receiver@somedomain.com'
 
 $EmailSubject = "User Report - $Reportdate"
@@ -129,8 +134,8 @@ $credObject = New-Object System.Management.Automation.PSCredential -ArgumentList
 
 
 $mailParams = @{
-    SmtpServer                 = 'smtp.office365.com'
-    Port                       = '587'
+    SmtpServer                 = $smtpserver
+    Port                       = $port
     From                       = $SenderName
     To                         = $Recipient
     Subject                    = $EmailSubject
@@ -140,4 +145,6 @@ $mailParams = @{
     DeliveryNotificationOption = 'OnFailure', 'OnSuccess'
 }
 
-Send-MailMessage @mailParams -UseSSL -Credential $credObject
+Send-MailMessage @mailParams
+
+#-UseSSL -Credential $credObject
